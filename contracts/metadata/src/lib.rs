@@ -1189,7 +1189,7 @@ mod propchain_metadata {
             let result = contract.add_legal_document(
                 1,
                 LegalDocType::Deed,
-                String::from("QmYwAPJzv5CZsnANOTaREALCIDaaaaaaaaaaaaaaaa"),
+                String::from("Qm12345678901234567890123456789012345678901234"),
                 Hash::from([0x03; 32]),
                 String::from("County Records"),
                 1700000000,
@@ -1213,7 +1213,7 @@ mod propchain_metadata {
                 .add_legal_document(
                     1,
                     LegalDocType::Title,
-                    String::from("QmYwAPJzv5CZsnANOTaREALCIDaaaaaaaaaaaaaaaa"),
+                    String::from("Qm12345678901234567890123456789012345678901234"),
                     Hash::from([0x03; 32]),
                     String::from("Title Company"),
                     1700000000,
@@ -1239,7 +1239,7 @@ mod propchain_metadata {
             let result = contract.add_media_item(
                 1,
                 0, // image
-                String::from("QmYwAPJzv5CZsnANOTaREALCIDaaaaaaaaaaaaaaaa"),
+                String::from("Qm12345678901234567890123456789012345678901234"),
                 String::from("Front view"),
                 String::from("image/jpeg"),
                 1024 * 1024,
