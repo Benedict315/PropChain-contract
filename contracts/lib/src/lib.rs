@@ -2216,6 +2216,45 @@ mod propchain_contracts {
             }
         }
 
+        /// Updates batch operation stats and emits monitoring event.
+        fn record_batch_operation(
+            &mut self,
+            operation_code: u8,
+            metrics: &BatchMetrics,
+        ) {
+            self.batch_operation_stats.total_batches_processed += 1;
+            self.batch_operation_stats.total_items_processed += metrics.successful_items as u64;
+            self.batch_operation_stats.total_items_failed += metrics.failed_items as u64;
+            if metrics.early_terminated {
+                self.batch_operation_stats.total_early_terminations += 1;
+            }
+            if metrics.total_items > self.batch_operation_stats.largest_batch_processed {
+                self.batch_operation_stats.largest_batch_processed = metrics.total_items;
+            }
+
+            let transaction_hash: Hash = [0u8; 32].into();
+            self.env().emit_event(BatchOperationCompleted {
+                operation_code,
+                caller: self.env().caller(),
+                event_version: 1,
+                total_items: metrics.total_items,
+                successful_items: metrics.successful_items,
+                failed_items: metrics.failed_items,
+                early_terminated: metrics.early_terminated,
+                timestamp: self.env().block_timestamp(),
+                block_number: self.env().block_number(),
+                transaction_hash,
+            });
+        }
+
+        /// Validates batch size against config. Returns Err(BatchSizeExceeded) if too large.
+        fn validate_batch_size(&self, size: usize) -> Result<(), Error> {
+            if size > self.batch_config.max_batch_size as usize {
+                return Err(Error::BatchSizeExceeded);
+            }
+            Ok(())
+        }
+
         /// Gas Monitoring: Tracks gas usage for operations
         #[ink(message)]
         pub fn get_gas_metrics(&self) -> GasMetrics {
@@ -2237,6 +2276,42 @@ mod propchain_contracts {
                 },
                 max_gas_used: self.gas_tracker.max_gas_used,
             }
+        }
+
+        /// Admin-only: update batch operation configuration.
+        #[ink(message)]
+        pub fn update_batch_config(
+            &mut self,
+            max_batch_size: u32,
+            max_failure_threshold: u32,
+        ) -> Result<(), Error> {
+            let caller = self.env().caller();
+            if caller != self.admin {
+                return Err(Error::Unauthorized);
+            }
+            if max_batch_size == 0 || max_batch_size > 200 {
+                return Err(Error::InvalidMetadata);
+            }
+            if max_failure_threshold == 0 || max_failure_threshold > max_batch_size {
+                return Err(Error::InvalidMetadata);
+            }
+            self.batch_config = BatchConfig {
+                max_batch_size,
+                max_failure_threshold,
+            };
+            Ok(())
+        }
+
+        /// Returns the current batch operation configuration.
+        #[ink(message)]
+        pub fn get_batch_config(&self) -> BatchConfig {
+            self.batch_config.clone()
+        }
+
+        /// Returns historical batch operation statistics.
+        #[ink(message)]
+        pub fn get_batch_stats(&self) -> BatchOperationStats {
+            self.batch_operation_stats.clone()
         }
 
         /// Performance Monitoring: Gets optimization recommendations

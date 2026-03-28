@@ -1860,4 +1860,72 @@ mod tests {
         assert_eq!(contract.check_account_compliance(accounts.alice), Ok(true));
         assert_eq!(contract.check_account_compliance(accounts.bob), Ok(true));
     }
+
+    // ============================================================================
+    // BATCH CONFIG AND MONITORING TESTS
+    // ============================================================================
+
+    #[ink::test]
+    fn update_batch_config_works() {
+        let accounts = default_accounts();
+        set_caller(accounts.alice);
+        let mut contract = PropertyRegistry::new();
+
+        // Default config
+        let config = contract.get_batch_config();
+        assert_eq!(config.max_batch_size, 50);
+        assert_eq!(config.max_failure_threshold, 5);
+
+        // Update as admin
+        assert!(contract.update_batch_config(100, 10).is_ok());
+
+        let config = contract.get_batch_config();
+        assert_eq!(config.max_batch_size, 100);
+        assert_eq!(config.max_failure_threshold, 10);
+    }
+
+    #[ink::test]
+    fn update_batch_config_unauthorized_fails() {
+        let accounts = default_accounts();
+        set_caller(accounts.alice);
+        let mut contract = PropertyRegistry::new();
+
+        // Try as non-admin
+        set_caller(accounts.bob);
+        assert_eq!(
+            contract.update_batch_config(100, 10),
+            Err(Error::Unauthorized)
+        );
+    }
+
+    #[ink::test]
+    fn update_batch_config_invalid_params_fails() {
+        let accounts = default_accounts();
+        set_caller(accounts.alice);
+        let mut contract = PropertyRegistry::new();
+
+        // max_batch_size = 0
+        assert_eq!(
+            contract.update_batch_config(0, 5),
+            Err(Error::InvalidMetadata)
+        );
+
+        // max_batch_size > 200
+        assert_eq!(
+            contract.update_batch_config(201, 5),
+            Err(Error::InvalidMetadata)
+        );
+
+        // max_failure_threshold > max_batch_size
+        assert_eq!(
+            contract.update_batch_config(50, 51),
+            Err(Error::InvalidMetadata)
+        );
+
+        // max_failure_threshold = 0
+        assert_eq!(
+            contract.update_batch_config(50, 0),
+            Err(Error::InvalidMetadata)
+        );
+    }
 }
