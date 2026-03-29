@@ -2031,8 +2031,8 @@ mod tests {
 
         let properties = vec![
             create_custom_metadata("Valid", 100, "Desc", 100000, "url"),
-            create_custom_metadata("", 200, "Desc", 200000, "url"),     // fail 1
-            create_custom_metadata("", 300, "Desc", 300000, "url"),     // fail 2 -> early terminate
+            create_custom_metadata("", 200, "Desc", 200000, "url"), // fail 1
+            create_custom_metadata("", 300, "Desc", 300000, "url"), // fail 2 -> early terminate
             create_custom_metadata("Never reached", 400, "Desc", 400000, "url"),
         ];
 
@@ -2058,14 +2058,18 @@ mod tests {
         // Set max to 1
         contract.update_batch_config(1, 1).unwrap();
 
-        let props = vec![
-            create_custom_metadata("Prop 1", 100, "Desc", 100000, "url"),
-        ];
+        let props = vec![create_custom_metadata("Prop 1", 100, "Desc", 100000, "url")];
         let ids = contract.batch_register_properties(props).unwrap().successes;
 
         let updates = vec![
-            (ids[0], create_custom_metadata("Updated 1", 200, "Desc", 200000, "url")),
-            (999, create_custom_metadata("Updated 2", 300, "Desc", 300000, "url")),
+            (
+                ids[0],
+                create_custom_metadata("Updated 1", 200, "Desc", 200000, "url"),
+            ),
+            (
+                999,
+                create_custom_metadata("Updated 2", 300, "Desc", 300000, "url"),
+            ),
         ];
 
         assert_eq!(
@@ -2088,9 +2092,18 @@ mod tests {
         let ids = contract.batch_register_properties(props).unwrap().successes;
 
         let updates = vec![
-            (ids[0], create_custom_metadata("Updated 1", 150, "Updated Desc", 150000, "url_updated")),
-            (999, create_custom_metadata("Nonexistent", 300, "Desc", 300000, "url")), // PropertyNotFound
-            (ids[1], create_custom_metadata("", 250, "Desc", 250000, "url")),          // InvalidMetadata
+            (
+                ids[0],
+                create_custom_metadata("Updated 1", 150, "Updated Desc", 150000, "url_updated"),
+            ),
+            (
+                999,
+                create_custom_metadata("Nonexistent", 300, "Desc", 300000, "url"),
+            ), // PropertyNotFound
+            (
+                ids[1],
+                create_custom_metadata("", 250, "Desc", 250000, "url"),
+            ), // InvalidMetadata
         ];
 
         let result = contract.batch_update_metadata(updates).unwrap();
@@ -2128,10 +2141,7 @@ mod tests {
         // Set max to 1 AFTER registration
         contract.update_batch_config(1, 1).unwrap();
 
-        let transfers = vec![
-            (ids[0], accounts.bob),
-            (ids[1], accounts.charlie),
-        ];
+        let transfers = vec![(ids[0], accounts.bob), (ids[1], accounts.charlie)];
 
         assert_eq!(
             contract.batch_transfer_properties_to_multiple(transfers),

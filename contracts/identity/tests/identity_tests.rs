@@ -3,7 +3,7 @@
 use ink::env::test::{default_accounts, DefaultAccounts};
 use ink::primitives::AccountId;
 use propchain_identity::propchain_identity::{
-    IdentityRegistry, IdentityError, PrivacySettings, VerificationLevel
+    IdentityError, IdentityRegistry, PrivacySettings, VerificationLevel,
 };
 use propchain_traits::ChainId;
 
@@ -16,7 +16,7 @@ fn test_create_identity() {
     let public_key = vec![1u8; 32]; // Mock public key
     let verification_method = "Ed25519VerificationKey2018".to_string();
     let service_endpoint = Some("https://example.com/identity".to_string());
-    
+
     let privacy_settings = PrivacySettings {
         public_reputation: true,
         public_verification: true,
@@ -41,7 +41,10 @@ fn test_create_identity() {
     let identity = identity_registry.get_identity(accounts.alice).unwrap();
     assert_eq!(identity.did_document.did, did);
     assert_eq!(identity.did_document.public_key, public_key);
-    assert_eq!(identity.did_document.verification_method, verification_method);
+    assert_eq!(
+        identity.did_document.verification_method,
+        verification_method
+    );
     assert_eq!(identity.did_document.service_endpoint, service_endpoint);
     assert_eq!(identity.reputation_score, 500); // Default starting reputation
     assert_eq!(identity.verification_level, VerificationLevel::None);
@@ -209,11 +212,7 @@ fn test_unauthorized_verification() {
     // Set caller to charlie (non-admin, non-authorized)
     ink::env::test::set_caller::<ink::env::DefaultEnvironment>(accounts.charlie);
     assert_eq!(
-        identity_registry.verify_identity(
-            accounts.bob,
-            VerificationLevel::Standard,
-            Some(365)
-        ),
+        identity_registry.verify_identity(accounts.bob, VerificationLevel::Standard, Some(365)),
         Err(IdentityError::Unauthorized)
     );
 }
@@ -259,7 +258,10 @@ fn test_update_reputation() {
     // Set caller as alice for reputation update
     ink::env::test::set_caller::<ink::env::DefaultEnvironment>(accounts.alice);
 
-    let initial_reputation = identity_registry.get_identity(accounts.bob).unwrap().reputation_score;
+    let initial_reputation = identity_registry
+        .get_identity(accounts.bob)
+        .unwrap()
+        .reputation_score;
 
     // Update reputation for successful transaction
     assert_eq!(
@@ -267,7 +269,10 @@ fn test_update_reputation() {
         Ok(())
     );
 
-    let updated_reputation = identity_registry.get_identity(accounts.bob).unwrap().reputation_score;
+    let updated_reputation = identity_registry
+        .get_identity(accounts.bob)
+        .unwrap()
+        .reputation_score;
     assert_eq!(updated_reputation, initial_reputation + 5);
 
     // Update reputation for failed transaction
@@ -276,7 +281,10 @@ fn test_update_reputation() {
         Ok(())
     );
 
-    let final_reputation = identity_registry.get_identity(accounts.bob).unwrap().reputation_score;
+    let final_reputation = identity_registry
+        .get_identity(accounts.bob)
+        .unwrap()
+        .reputation_score;
     assert_eq!(final_reputation, updated_reputation - 10);
 }
 
@@ -313,7 +321,7 @@ fn test_assess_trust() {
 
     // Assess trust from alice's perspective
     let trust_assessment = identity_registry.assess_trust(accounts.bob).unwrap();
-    
+
     assert_eq!(trust_assessment.target_account, accounts.bob);
     assert!(trust_assessment.trust_score >= 0 && trust_assessment.trust_score <= 100);
     assert_eq!(trust_assessment.verification_level, VerificationLevel::None);
@@ -366,10 +374,18 @@ fn test_cross_chain_verification() {
     );
 
     // Check cross-chain verification was added
-    let cross_chain_verification = identity_registry.get_cross_chain_verification(accounts.bob, chain_id).unwrap();
+    let cross_chain_verification = identity_registry
+        .get_cross_chain_verification(accounts.bob, chain_id)
+        .unwrap();
     assert_eq!(cross_chain_verification.chain_id, chain_id);
-    assert_eq!(cross_chain_verification.verification_hash, verification_hash);
-    assert_eq!(cross_chain_verification.reputation_score, chain_reputation_score);
+    assert_eq!(
+        cross_chain_verification.verification_hash,
+        verification_hash
+    );
+    assert_eq!(
+        cross_chain_verification.reputation_score,
+        chain_reputation_score
+    );
     assert!(cross_chain_verification.is_active);
 
     // Check that reputation was updated (average of local and chain reputation)
@@ -499,11 +515,7 @@ fn test_privacy_preserving_verification() {
 
     // Privacy-preserving verification should succeed
     assert_eq!(
-        identity_registry.verify_privacy_preserving(
-            proof,
-            public_inputs,
-            verification_type
-        ),
+        identity_registry.verify_privacy_preserving(proof, public_inputs, verification_type),
         Ok(true)
     );
 }
@@ -542,11 +554,7 @@ fn test_privacy_verification_failed() {
 
     // Privacy-preserving verification should fail
     assert_eq!(
-        identity_registry.verify_privacy_preserving(
-            proof,
-            public_inputs,
-            verification_type
-        ),
+        identity_registry.verify_privacy_preserving(proof, public_inputs, verification_type),
         Err(IdentityError::PrivacyVerificationFailed)
     );
 }
@@ -592,14 +600,14 @@ fn test_reputation_threshold_check() {
 #[ink::test]
 fn test_admin_functions() {
     let accounts: DefaultAccounts<ink::env::DefaultEnvironment> = default_accounts();
-    
+
     // Set caller to non-admin (bob) before creating contract
     ink::env::test::set_caller::<ink::env::DefaultEnvironment>(accounts.bob);
     let mut identity_registry = IdentityRegistry::new();
 
     // Test with charlie as non-admin caller
     ink::env::test::set_caller::<ink::env::DefaultEnvironment>(accounts.charlie);
-    
+
     // Only admin can add authorized verifiers
     assert_eq!(
         identity_registry.add_authorized_verifier(accounts.charlie),
@@ -617,10 +625,7 @@ fn test_admin_functions() {
     );
 
     // Admin can add supported chains
-    assert_eq!(
-        identity_registry.add_supported_chain(999),
-        Ok(())
-    );
+    assert_eq!(identity_registry.add_supported_chain(999), Ok(()));
 
     // Check supported chains
     let supported_chains = identity_registry.get_supported_chains();

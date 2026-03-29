@@ -269,7 +269,13 @@ mod propchain_contracts {
 
     /// Configuration for batch operations
     #[derive(
-        Debug, Clone, PartialEq, Eq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+        Debug,
+        Clone,
+        PartialEq,
+        Eq,
+        scale::Encode,
+        scale::Decode,
+        ink::storage::traits::StorageLayout,
     )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct BatchConfig {
@@ -325,7 +331,14 @@ mod propchain_contracts {
 
     /// Historical batch operation statistics (stored on-chain)
     #[derive(
-        Debug, Clone, PartialEq, Eq, Default, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+        Debug,
+        Clone,
+        PartialEq,
+        Eq,
+        Default,
+        scale::Encode,
+        scale::Decode,
+        ink::storage::traits::StorageLayout,
     )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct BatchOperationStats {
@@ -1316,10 +1329,7 @@ mod propchain_contracts {
 
         /// Sets the identity registry contract address (admin only)
         #[ink(message)]
-        pub fn set_identity_registry(
-            &mut self,
-            registry: Option<AccountId>,
-        ) -> Result<(), Error> {
+        pub fn set_identity_registry(&mut self, registry: Option<AccountId>) -> Result<(), Error> {
             if !self.ensure_admin_rbac() {
                 return Err(Error::Unauthorized);
             }
@@ -1378,11 +1388,11 @@ mod propchain_contracts {
             };
 
             use ink::env::call::FromAccountId;
-            let registry: IdentityRegistryRef =
-                FromAccountId::from_account_id(registry_addr);
+            let registry: IdentityRegistryRef = FromAccountId::from_account_id(registry_addr);
 
             // Check if identity exists
-            let identity = registry.get_identity(account)
+            let identity = registry
+                .get_identity(account)
                 .ok_or(Error::IdentityNotFound)?;
 
             // Check if identity is verified
@@ -1760,9 +1770,9 @@ mod propchain_contracts {
                 use ink::env::call::FromAccountId;
                 let mut registry: IdentityRegistryRef =
                     FromAccountId::from_account_id(registry_addr);
-                
+
                 let transaction_value = property.metadata.valuation;
-                
+
                 // Update reputation for both sender and receiver
                 let _ = registry.update_reputation(from, true, transaction_value);
                 let _ = registry.update_reputation(to, true, transaction_value);
@@ -2568,11 +2578,7 @@ mod propchain_contracts {
         }
 
         /// Updates batch operation stats and emits monitoring event.
-        fn record_batch_operation(
-            &mut self,
-            operation_code: u8,
-            metrics: &BatchMetrics,
-        ) {
+        fn record_batch_operation(&mut self, operation_code: u8, metrics: &BatchMetrics) {
             self.batch_operation_stats.total_batches_processed += 1;
             self.batch_operation_stats.total_items_processed += metrics.successful_items as u64;
             self.batch_operation_stats.total_items_failed += metrics.failed_items as u64;

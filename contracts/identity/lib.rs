@@ -48,27 +48,31 @@ pub mod propchain_identity {
     }
 
     /// Decentralized Identifier (DID) document structure
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct DIDDocument {
-        pub did: String,                    // Decentralized Identifier
-        pub public_key: Vec<u8>,            // Public key for verification
-        pub verification_method: String,    // Verification method (e.g., Ed25519)
+        pub did: String,                      // Decentralized Identifier
+        pub public_key: Vec<u8>,              // Public key for verification
+        pub verification_method: String,      // Verification method (e.g., Ed25519)
         pub service_endpoint: Option<String>, // Service endpoint for identity verification
-        pub created_at: u64,               // Creation timestamp
-        pub updated_at: u64,               // Last update timestamp
-        pub version: u32,                  // Document version
+        pub created_at: u64,                  // Creation timestamp
+        pub updated_at: u64,                  // Last update timestamp
+        pub version: u32,                     // Document version
     }
 
     /// Identity information with cross-chain support
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct Identity {
         pub account_id: AccountId,
         pub did_document: DIDDocument,
-        pub reputation_score: u32,         // 0-1000 reputation score
+        pub reputation_score: u32, // 0-1000 reputation score
         pub verification_level: VerificationLevel,
-        pub trust_score: u32,              // Trust score 0-100
+        pub trust_score: u32, // Trust score 0-100
         pub is_verified: bool,
         pub verified_at: Option<u64>,
         pub verification_expires: Option<u64>,
@@ -79,41 +83,56 @@ pub mod propchain_identity {
     }
 
     /// Verification levels for identity verification
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        scale::Encode,
+        scale::Decode,
+        ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum VerificationLevel {
-        None,           // No verification
-        Basic,          // Basic identity verification
-        Standard,       // Standard KYC verification
-        Enhanced,       // Enhanced due diligence
-        Premium,        // Premium verification with multiple checks
+        None,     // No verification
+        Basic,    // Basic identity verification
+        Standard, // Standard KYC verification
+        Enhanced, // Enhanced due diligence
+        Premium,  // Premium verification with multiple checks
     }
 
     /// Social recovery configuration
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct SocialRecoveryConfig {
-        pub guardians: Vec<AccountId>,      // Trusted guardians for recovery
-        pub threshold: u8,                  // Number of guardians required for recovery
-        pub recovery_period: u64,           // Recovery period in blocks
+        pub guardians: Vec<AccountId>, // Trusted guardians for recovery
+        pub threshold: u8,             // Number of guardians required for recovery
+        pub recovery_period: u64,      // Recovery period in blocks
         pub last_recovery_attempt: Option<u64>,
         pub is_recovery_active: bool,
         pub recovery_approvals: Vec<AccountId>,
     }
 
     /// Privacy settings for identity verification
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct PrivacySettings {
-        pub public_reputation: bool,        // Make reputation score public
-        pub public_verification: bool,      // Make verification status public
-        pub data_sharing_consent: bool,      // Consent for data sharing
-        pub zero_knowledge_proof: bool,     // Use zero-knowledge proofs
+        pub public_reputation: bool,           // Make reputation score public
+        pub public_verification: bool,         // Make verification status public
+        pub data_sharing_consent: bool,        // Consent for data sharing
+        pub zero_knowledge_proof: bool,        // Use zero-knowledge proofs
         pub selective_disclosure: Vec<String>, // Fields to selectively disclose
     }
 
     /// Cross-chain verification information
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct CrossChainVerification {
         pub chain_id: ChainId,
@@ -124,7 +143,9 @@ pub mod propchain_identity {
     }
 
     /// Reputation metrics based on transaction history
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct ReputationMetrics {
         pub total_transactions: u64,
@@ -139,11 +160,13 @@ pub mod propchain_identity {
     }
 
     /// Trust assessment for counterparties
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct TrustAssessment {
         pub target_account: AccountId,
-        pub trust_score: u32,              // 0-100 trust score
+        pub trust_score: u32, // 0-100 trust score
         pub verification_level: VerificationLevel,
         pub reputation_score: u32,
         pub shared_transactions: u64,
@@ -155,17 +178,28 @@ pub mod propchain_identity {
     }
 
     /// Risk level assessment
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        scale::Encode,
+        scale::Decode,
+        ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum RiskLevel {
-        Low,        // Low risk, highly trusted
-        Medium,     // Medium risk, some trust established
-        High,       // High risk, limited trust
-        Critical,   // Critical risk, avoid transactions
+        Low,      // Low risk, highly trusted
+        Medium,   // Medium risk, some trust established
+        High,     // High risk, limited trust
+        Critical, // Critical risk, avoid transactions
     }
 
     /// Identity verification request
-    #[derive(Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug, Clone, PartialEq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub struct VerificationRequest {
         pub id: u64,
@@ -180,7 +214,16 @@ pub mod propchain_identity {
     }
 
     /// Verification status
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, scale::Encode, scale::Decode, ink::storage::traits::StorageLayout)]
+    #[derive(
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        scale::Encode,
+        scale::Decode,
+        ink::storage::traits::StorageLayout,
+    )]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
     pub enum VerificationStatus {
         Pending,
@@ -301,11 +344,11 @@ pub mod propchain_identity {
                 verification_count: 0,
                 cross_chain_verifications: Mapping::default(),
                 supported_chains: vec![
-                    1,  // Ethereum
-                    2,  // Polkadot
-                    3,  // Avalanche
-                    4,  // BSC
-                    5,  // Polygon
+                    1, // Ethereum
+                    2, // Polkadot
+                    3, // Avalanche
+                    4, // BSC
+                    5, // Polygon
                 ],
                 admin: caller,
                 authorized_verifiers: Mapping::default(),
@@ -419,7 +462,9 @@ pub mod propchain_identity {
             }
 
             // Get identity
-            let mut identity = self.identities.get(&target_account)
+            let mut identity = self
+                .identities
+                .get(&target_account)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Update verification
@@ -469,7 +514,9 @@ pub mod propchain_identity {
             }
 
             // Get and update reputation metrics
-            let mut metrics = self.reputation_metrics.get(&target_account)
+            let mut metrics = self
+                .reputation_metrics
+                .get(&target_account)
                 .unwrap_or_else(|| ReputationMetrics {
                     total_transactions: 0,
                     successful_transactions: 0,
@@ -484,7 +531,8 @@ pub mod propchain_identity {
 
             metrics.total_transactions += 1;
             metrics.total_value_transacted += transaction_value;
-            metrics.average_transaction_value = metrics.total_value_transacted / metrics.total_transactions as u128;
+            metrics.average_transaction_value =
+                metrics.total_value_transacted / metrics.total_transactions as u128;
 
             if transaction_successful {
                 metrics.successful_transactions += 1;
@@ -522,25 +570,32 @@ pub mod propchain_identity {
 
         /// Get trust assessment for counterparty
         #[ink(message)]
-        pub fn assess_trust(&mut self, target_account: AccountId) -> Result<TrustAssessment, IdentityError> {
+        pub fn assess_trust(
+            &mut self,
+            target_account: AccountId,
+        ) -> Result<TrustAssessment, IdentityError> {
             let caller = self.env().caller();
             let timestamp = self.env().block_timestamp();
 
             // Get target identity and reputation
-            let target_identity = self.identities.get(&target_account)
+            let target_identity = self
+                .identities
+                .get(&target_account)
                 .ok_or(IdentityError::IdentityNotFound)?;
-            let target_metrics = self.reputation_metrics.get(&target_account)
-                .unwrap_or_else(|| ReputationMetrics {
-                    total_transactions: 0,
-                    successful_transactions: 0,
-                    failed_transactions: 0,
-                    dispute_count: 0,
-                    dispute_resolved_count: 0,
-                    average_transaction_value: 0,
-                    total_value_transacted: 0,
-                    last_updated: timestamp,
-                    reputation_score: target_identity.reputation_score,
-                });
+            let target_metrics =
+                self.reputation_metrics
+                    .get(&target_account)
+                    .unwrap_or_else(|| ReputationMetrics {
+                        total_transactions: 0,
+                        successful_transactions: 0,
+                        failed_transactions: 0,
+                        dispute_count: 0,
+                        dispute_resolved_count: 0,
+                        average_transaction_value: 0,
+                        total_value_transacted: 0,
+                        last_updated: timestamp,
+                        reputation_score: target_identity.reputation_score,
+                    });
 
             // Calculate trust score
             let trust_score = self.calculate_trust_score(&target_identity, &target_metrics);
@@ -570,7 +625,8 @@ pub mod propchain_identity {
                 expires_at: timestamp + 86400 * 30, // 30 days
             };
 
-            self.trust_assessments.insert(&(caller, target_account), &assessment);
+            self.trust_assessments
+                .insert(&(caller, target_account), &assessment);
 
             Ok(assessment)
         }
@@ -592,7 +648,9 @@ pub mod propchain_identity {
             }
 
             // Get identity
-            let mut identity = self.identities.get(&caller)
+            let mut identity = self
+                .identities
+                .get(&caller)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Add cross-chain verification
@@ -604,7 +662,8 @@ pub mod propchain_identity {
                 is_active: true,
             };
 
-            self.cross_chain_verifications.insert(&(caller, chain_id), &cross_chain_verification);
+            self.cross_chain_verifications
+                .insert(&(caller, chain_id), &cross_chain_verification);
             identity.last_activity = timestamp;
 
             // Update reputation based on cross-chain verification
@@ -635,7 +694,9 @@ pub mod propchain_identity {
             let timestamp = self.env().block_timestamp();
 
             // Get identity
-            let mut identity = self.identities.get(&caller)
+            let mut identity = self
+                .identities
+                .get(&caller)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Check if recovery is already in progress
@@ -644,7 +705,12 @@ pub mod propchain_identity {
             }
 
             // Verify recovery signature
-            if !self.verify_recovery_signature(&caller, &new_account, &recovery_signature, &identity) {
+            if !self.verify_recovery_signature(
+                &caller,
+                &new_account,
+                &recovery_signature,
+                &identity,
+            ) {
                 return Err(IdentityError::InvalidSignature);
             }
 
@@ -676,7 +742,9 @@ pub mod propchain_identity {
             let caller = self.env().caller();
 
             // Get target identity
-            let mut identity = self.identities.get(&target_account)
+            let mut identity = self
+                .identities
+                .get(&target_account)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Check if caller is a guardian
@@ -690,12 +758,18 @@ pub mod propchain_identity {
             }
 
             // Add approval
-            if !identity.social_recovery.recovery_approvals.contains(&caller) {
+            if !identity
+                .social_recovery
+                .recovery_approvals
+                .contains(&caller)
+            {
                 identity.social_recovery.recovery_approvals.push(caller);
             }
 
             // Check if threshold is met
-            if identity.social_recovery.recovery_approvals.len() >= identity.social_recovery.threshold as usize {
+            if identity.social_recovery.recovery_approvals.len()
+                >= identity.social_recovery.threshold as usize
+            {
                 // Complete recovery
                 self.complete_recovery(target_account, new_account)?;
             } else {
@@ -715,7 +789,9 @@ pub mod propchain_identity {
             let _timestamp = self.env().block_timestamp();
 
             // Get old identity
-            let mut identity = self.identities.get(&old_account)
+            let mut identity = self
+                .identities
+                .get(&old_account)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Update account ID
@@ -726,10 +802,11 @@ pub mod propchain_identity {
 
             // Remove old identity mapping
             self.identities.remove(&old_account);
-            
+
             // Add new identity mapping
             self.identities.insert(&new_account, &identity);
-            self.did_to_account.insert(&identity.did_document.did, &new_account);
+            self.did_to_account
+                .insert(&identity.did_document.did, &new_account);
 
             // Update reputation metrics mapping
             if let Some(metrics) = self.reputation_metrics.get(&old_account) {
@@ -759,7 +836,9 @@ pub mod propchain_identity {
             let _timestamp = self.env().block_timestamp();
 
             // Get identity
-            let identity = self.identities.get(&caller)
+            let identity = self
+                .identities
+                .get(&caller)
                 .ok_or(IdentityError::IdentityNotFound)?;
 
             // Check if privacy settings allow this verification
@@ -768,7 +847,8 @@ pub mod propchain_identity {
             }
 
             // Verify zero-knowledge proof (simplified verification)
-            let is_valid = self.verify_zero_knowledge_proof(&proof, &public_inputs, &verification_type);
+            let is_valid =
+                self.verify_zero_knowledge_proof(&proof, &public_inputs, &verification_type);
 
             if is_valid {
                 // Update privacy nonce for replay protection
@@ -798,7 +878,11 @@ pub mod propchain_identity {
 
         /// Get trust assessment
         #[ink(message)]
-        pub fn get_trust_assessment(&self, assessor: AccountId, target: AccountId) -> Option<TrustAssessment> {
+        pub fn get_trust_assessment(
+            &self,
+            assessor: AccountId,
+            target: AccountId,
+        ) -> Option<TrustAssessment> {
             self.trust_assessments.get(&(assessor, target))
         }
 
@@ -814,7 +898,11 @@ pub mod propchain_identity {
 
         /// Get cross-chain verification status
         #[ink(message)]
-        pub fn get_cross_chain_verification(&self, account: AccountId, chain_id: ChainId) -> Option<CrossChainVerification> {
+        pub fn get_cross_chain_verification(
+            &self,
+            account: AccountId,
+            chain_id: ChainId,
+        ) -> Option<CrossChainVerification> {
             self.cross_chain_verifications.get(&(account, chain_id))
         }
 
@@ -847,10 +935,11 @@ pub mod propchain_identity {
             };
 
             // Weighted calculation with proper type casting
-            ((base_score as u64 * 40) 
-                + (reputation_factor as u64 / 10 * 30) 
-                + (verification_bonus as u64 * 20) 
-                + (success_rate as u64 * 10)) as u32 / 100
+            ((base_score as u64 * 40)
+                + (reputation_factor as u64 / 10 * 30)
+                + (verification_bonus as u64 * 20)
+                + (success_rate as u64 * 10)) as u32
+                / 100
         }
 
         fn verify_recovery_signature(
@@ -882,7 +971,10 @@ pub mod propchain_identity {
 
         /// Admin methods
         #[ink(message)]
-        pub fn add_authorized_verifier(&mut self, verifier: AccountId) -> Result<(), IdentityError> {
+        pub fn add_authorized_verifier(
+            &mut self,
+            verifier: AccountId,
+        ) -> Result<(), IdentityError> {
             if self.env().caller() != self.admin {
                 return Err(IdentityError::Unauthorized);
             }
@@ -891,7 +983,10 @@ pub mod propchain_identity {
         }
 
         #[ink(message)]
-        pub fn remove_authorized_verifier(&mut self, verifier: AccountId) -> Result<(), IdentityError> {
+        pub fn remove_authorized_verifier(
+            &mut self,
+            verifier: AccountId,
+        ) -> Result<(), IdentityError> {
             if self.env().caller() != self.admin {
                 return Err(IdentityError::Unauthorized);
             }
