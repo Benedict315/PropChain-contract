@@ -5,6 +5,9 @@
 //! - Common error variants reusable across contracts
 //! - Numeric error codes for external API integration
 //! - Full Debug, Display, and From trait implementations
+//! - [`ErrorMessage`]: structured error snapshot combining code, category, message, and i18n key
+//! - [`ContractError::to_error_message()`]: default method to produce an `ErrorMessage`
+//! - [`ContractError::error_i18n_key()`]: default method returning a localization key
 
 use core::fmt;
 use scale::{Decode, Encode};
@@ -12,9 +15,30 @@ use scale::{Decode, Encode};
 #[cfg(feature = "std")]
 use scale_info::TypeInfo;
 
-/// =============================================================================
-/// Base Error Trait
-/// =============================================================================
+// =============================================================================
+// Standardized Error Message
+// =============================================================================
+
+/// Structured snapshot of all error information for a single error instance.
+///
+/// Suitable for logging and client-side display. All string fields are `&'static str`
+/// for `no_std` / no-heap compatibility. This type is not SCALE-encoded since
+/// `&'static str` does not implement `Decode`; use it purely in-memory.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ErrorMessage {
+    /// Numeric error code, globally unique across all PropChain contracts.
+    pub code: u32,
+    /// Top-level domain that produced this error.
+    pub category: ErrorCategory,
+    /// Short human-readable message (matches `error_description`).
+    pub message: &'static str,
+    /// Longer technical description suitable for logs and developer tooling.
+    pub description: &'static str,
+    /// Dot-separated localization key for client-side message lookup.
+    /// Format: `"<category>.<variant_snake_case>"`, e.g. `"compliance.not_verified"`.
+    pub i18n_key: &'static str,
+}
+
 // =============================================================================
 // Base Error Trait
 // =============================================================================
@@ -43,6 +67,26 @@ pub trait ContractError: fmt::Debug + fmt::Display + Encode + Decode {
             8000..=8999 => ErrorCategory::Staking,
             9000..=9999 => ErrorCategory::Monitoring,
             _ => ErrorCategory::Unknown,
+        }
+    }
+
+    /// Returns a dot-separated localization key for client-side message lookup.
+    ///
+    /// Format: `"<category>.<variant_snake_case>"`, e.g. `"compliance.not_verified"`.
+    /// Override this in each error type to provide a precise key.
+    fn error_i18n_key(&self) -> &'static str {
+        "unknown.error"
+    }
+
+    /// Constructs a complete [`ErrorMessage`] snapshot from this error.
+    /// No allocation is performed; all fields are `'static`.
+    fn to_error_message(&self) -> ErrorMessage {
+        ErrorMessage {
+            code: self.error_code(),
+            category: self.error_category(),
+            message: self.error_description(),
+            description: self.error_description(),
+            i18n_key: self.error_i18n_key(),
         }
     }
 }
@@ -82,9 +126,6 @@ impl fmt::Display for ErrorCategory {
     }
 }
 
-/// =============================================================================
-/// Common Error Variants
-/// =============================================================================
 // =============================================================================
 // Common Error Variants
 // =============================================================================
@@ -159,11 +200,23 @@ impl ContractError for CommonError {
     fn error_category(&self) -> ErrorCategory {
         ErrorCategory::Common
     }
+
+    fn error_i18n_key(&self) -> &'static str {
+        match self {
+            CommonError::Unauthorized => "common.unauthorized",
+            CommonError::InvalidParameters => "common.invalid_parameters",
+            CommonError::NotFound => "common.not_found",
+            CommonError::InsufficientFunds => "common.insufficient_funds",
+            CommonError::InvalidState => "common.invalid_state",
+            CommonError::InternalError => "common.internal_error",
+            CommonError::CodecError => "common.codec_error",
+            CommonError::NotImplemented => "common.not_implemented",
+            CommonError::Timeout => "common.timeout",
+            CommonError::Duplicate => "common.duplicate",
+        }
+    }
 }
 
-/// =============================================================================
-/// Error Code Constants
-/// =============================================================================
 // =============================================================================
 // Error Code Constants
 // =============================================================================
@@ -257,6 +310,7 @@ pub mod oracle_codes {
     pub const ORACLE_INSUFFICIENT_REPUTATION: u32 = 4009;
     pub const ORACLE_SOURCE_ALREADY_EXISTS: u32 = 4010;
     pub const ORACLE_REQUEST_PENDING: u32 = 4011;
+    pub const ORACLE_BATCH_SIZE_EXCEEDED: u32 = 4012;
 }
 
 /// Fee error codes (5000-5999)
@@ -278,6 +332,14 @@ pub mod compliance_codes {
     pub const COMPLIANCE_CHECK_FAILED: u32 = 6003;
     pub const COMPLIANCE_DOCUMENT_MISSING: u32 = 6004;
     pub const COMPLIANCE_EXPIRED: u32 = 6005;
+    pub const COMPLIANCE_HIGH_RISK: u32 = 6006;
+    pub const COMPLIANCE_PROHIBITED_JURISDICTION: u32 = 6007;
+    pub const COMPLIANCE_ALREADY_VERIFIED: u32 = 6008;
+    pub const COMPLIANCE_CONSENT_NOT_GIVEN: u32 = 6009;
+    pub const COMPLIANCE_INVALID_RISK_SCORE: u32 = 6010;
+    pub const COMPLIANCE_JURISDICTION_NOT_SUPPORTED: u32 = 6011;
+    pub const COMPLIANCE_INVALID_DOCUMENT_TYPE: u32 = 6012;
+    pub const COMPLIANCE_DATA_RETENTION_EXPIRED: u32 = 6013;
 }
 
 /// Governance error codes (7000-7999)
@@ -318,4 +380,60 @@ pub mod monitoring_codes {
     pub const MONITORING_INVALID_THRESHOLD: u32 = 9003;
     pub const MONITORING_SUBSCRIBER_LIMIT_REACHED: u32 = 9004;
     pub const MONITORING_SUBSCRIBER_NOT_FOUND: u32 = 9005;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn common_error_i18n_keys_are_correct() {
+        assert_eq!(
+            CommonError::Unauthorized.error_i18n_key(),
+            "common.unauthorized"
+        );
+        assert_eq!(CommonError::NotFound.error_i18n_key(), "common.not_found");
+        assert_eq!(CommonError::Duplicate.error_i18n_key(), "common.duplicate");
+    }
+
+    #[test]
+    fn to_error_message_populates_all_fields() {
+        let msg = CommonError::Unauthorized.to_error_message();
+        assert_eq!(msg.code, common_codes::UNAUTHORIZED);
+        assert_eq!(msg.category, ErrorCategory::Common);
+        assert_eq!(msg.i18n_key, "common.unauthorized");
+        assert!(!msg.description.is_empty());
+    }
+
+    #[test]
+    fn oracle_batch_size_exceeded_constant_matches_value() {
+        assert_eq!(oracle_codes::ORACLE_BATCH_SIZE_EXCEEDED, 4012);
+    }
+
+    #[test]
+    fn compliance_codes_are_unique() {
+        let mut codes = vec![
+            compliance_codes::COMPLIANCE_UNAUTHORIZED,
+            compliance_codes::COMPLIANCE_NOT_VERIFIED,
+            compliance_codes::COMPLIANCE_CHECK_FAILED,
+            compliance_codes::COMPLIANCE_DOCUMENT_MISSING,
+            compliance_codes::COMPLIANCE_EXPIRED,
+            compliance_codes::COMPLIANCE_HIGH_RISK,
+            compliance_codes::COMPLIANCE_PROHIBITED_JURISDICTION,
+            compliance_codes::COMPLIANCE_ALREADY_VERIFIED,
+            compliance_codes::COMPLIANCE_CONSENT_NOT_GIVEN,
+            compliance_codes::COMPLIANCE_INVALID_RISK_SCORE,
+            compliance_codes::COMPLIANCE_JURISDICTION_NOT_SUPPORTED,
+            compliance_codes::COMPLIANCE_INVALID_DOCUMENT_TYPE,
+            compliance_codes::COMPLIANCE_DATA_RETENTION_EXPIRED,
+        ];
+        let len = codes.len();
+        codes.sort();
+        codes.dedup();
+        assert_eq!(
+            codes.len(),
+            len,
+            "duplicate compliance error codes detected"
+        );
+    }
 }

@@ -1,11 +1,8 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
-#![allow(clippy::needless_borrows_for_generic_args)]
-#![allow(clippy::too_many_arguments)]
-#![allow(clippy::upper_case_acronyms)]
 #![allow(
-    clippy::upper_case_acronyms,
+    clippy::needless_borrows_for_generic_args,
     clippy::too_many_arguments,
-    clippy::needless_borrows_for_generic_args
+    clippy::upper_case_acronyms
 )]
 
 use propchain_traits::ComplianceChecker;
@@ -383,52 +380,78 @@ mod compliance_registry {
                     propchain_traits::errors::compliance_codes::COMPLIANCE_EXPIRED
                 }
                 Error::HighRisk => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_CHECK_FAILED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_HIGH_RISK
                 }
                 Error::ProhibitedJurisdiction => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_CHECK_FAILED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_PROHIBITED_JURISDICTION
                 }
                 Error::AlreadyVerified => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_UNAUTHORIZED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_ALREADY_VERIFIED
                 }
                 Error::ConsentNotGiven => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_NOT_VERIFIED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_CONSENT_NOT_GIVEN
                 }
                 Error::DataRetentionExpired => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_EXPIRED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_DATA_RETENTION_EXPIRED
                 }
                 Error::InvalidRiskScore => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_CHECK_FAILED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_INVALID_RISK_SCORE
                 }
                 Error::InvalidDocumentType => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_DOCUMENT_MISSING
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_INVALID_DOCUMENT_TYPE
                 }
                 Error::JurisdictionNotSupported => {
-                    propchain_traits::errors::compliance_codes::COMPLIANCE_CHECK_FAILED
+                    propchain_traits::errors::compliance_codes::COMPLIANCE_JURISDICTION_NOT_SUPPORTED
                 }
             }
         }
 
         fn error_description(&self) -> &'static str {
             match self {
-                Error::NotAuthorized => "Caller does not have permission to perform this operation",
+                Error::NotAuthorized => {
+                    "Caller does not have permission to perform this compliance operation"
+                }
                 Error::NotVerified => "The user has not completed verification",
                 Error::VerificationExpired => {
                     "The user's verification has expired and needs renewal"
                 }
-                Error::HighRisk => "The user has been assessed as high risk",
-                Error::ProhibitedJurisdiction => "The user's jurisdiction is prohibited",
-                Error::AlreadyVerified => "The user is already verified",
-                Error::ConsentNotGiven => "The user has not provided required consent",
-                Error::DataRetentionExpired => "The data retention period has expired",
-                Error::InvalidRiskScore => "The risk score is invalid or out of range",
-                Error::InvalidDocumentType => "The document type is invalid or not supported",
-                Error::JurisdictionNotSupported => "The jurisdiction is not supported",
+                Error::HighRisk => "The user has been assessed as high risk and is not permitted",
+                Error::ProhibitedJurisdiction => {
+                    "The user's jurisdiction is prohibited from this operation"
+                }
+                Error::AlreadyVerified => "The user is already verified and cannot be re-verified",
+                Error::ConsentNotGiven => "The user has not provided the required consent",
+                Error::DataRetentionExpired => {
+                    "The data retention period for this record has expired"
+                }
+                Error::InvalidRiskScore => {
+                    "The risk score provided is invalid or out of acceptable range"
+                }
+                Error::InvalidDocumentType => "The document type is invalid or not accepted",
+                Error::JurisdictionNotSupported => {
+                    "The specified jurisdiction is not currently supported"
+                }
             }
         }
 
         fn error_category(&self) -> ErrorCategory {
             ErrorCategory::Compliance
+        }
+
+        fn error_i18n_key(&self) -> &'static str {
+            match self {
+                Error::NotAuthorized => "compliance.unauthorized",
+                Error::NotVerified => "compliance.not_verified",
+                Error::VerificationExpired => "compliance.verification_expired",
+                Error::HighRisk => "compliance.high_risk",
+                Error::ProhibitedJurisdiction => "compliance.prohibited_jurisdiction",
+                Error::AlreadyVerified => "compliance.already_verified",
+                Error::ConsentNotGiven => "compliance.consent_not_given",
+                Error::DataRetentionExpired => "compliance.data_retention_expired",
+                Error::InvalidRiskScore => "compliance.invalid_risk_score",
+                Error::InvalidDocumentType => "compliance.invalid_document_type",
+                Error::JurisdictionNotSupported => "compliance.jurisdiction_not_supported",
+            }
         }
     }
 

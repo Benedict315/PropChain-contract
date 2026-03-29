@@ -3,10 +3,12 @@
 pub mod access_control;
 pub mod constants;
 pub mod errors;
+pub mod i18n;
 pub mod monitoring;
 
 pub use access_control::*;
 pub use errors::*;
+pub use i18n::*;
 use ink::prelude::string::String;
 use ink::primitives::AccountId;
 pub use monitoring::*;
@@ -78,7 +80,7 @@ impl ContractError for OracleError {
             OracleError::InsufficientReputation => oracle_codes::ORACLE_INSUFFICIENT_REPUTATION,
             OracleError::SourceAlreadyExists => oracle_codes::ORACLE_SOURCE_ALREADY_EXISTS,
             OracleError::RequestPending => oracle_codes::ORACLE_REQUEST_PENDING,
-            OracleError::BatchSizeExceeded => 4012,
+            OracleError::BatchSizeExceeded => oracle_codes::ORACLE_BATCH_SIZE_EXCEEDED,
         }
     }
 
@@ -117,6 +119,23 @@ impl ContractError for OracleError {
 
     fn error_category(&self) -> ErrorCategory {
         ErrorCategory::Oracle
+    }
+
+    fn error_i18n_key(&self) -> &'static str {
+        match self {
+            OracleError::PropertyNotFound => "oracle.property_not_found",
+            OracleError::InsufficientSources => "oracle.insufficient_sources",
+            OracleError::InvalidValuation => "oracle.invalid_valuation",
+            OracleError::Unauthorized => "oracle.unauthorized",
+            OracleError::OracleSourceNotFound => "oracle.source_not_found",
+            OracleError::InvalidParameters => "oracle.invalid_parameters",
+            OracleError::PriceFeedError => "oracle.price_feed_error",
+            OracleError::AlertNotFound => "oracle.alert_not_found",
+            OracleError::InsufficientReputation => "oracle.insufficient_reputation",
+            OracleError::SourceAlreadyExists => "oracle.source_already_exists",
+            OracleError::RequestPending => "oracle.request_pending",
+            OracleError::BatchSizeExceeded => "oracle.batch_size_exceeded",
+        }
     }
 }
 

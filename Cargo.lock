@@ -971,7 +971,6 @@ name = "compliance_registry"
 version = "0.1.0"
 dependencies = [
  "ink 5.1.1",
- "ink_e2e",
  "parity-scale-codec",
  "propchain-traits",
  "scale-info",
@@ -7275,7 +7274,6 @@ name = "tax-compliance"
 version = "0.1.0"
 dependencies = [
  "ink 5.1.1",
- "ink_e2e",
  "parity-scale-codec",
  "propchain-traits",
  "scale-info",
