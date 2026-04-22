@@ -200,7 +200,7 @@ pub fn generate_property_metadata(user_id: usize, property_num: usize) -> Proper
 }
 
 /// Simulate a user registering properties
-fn simulate_user_registration(
+pub fn simulate_user_registration(
     user_id: usize,
     num_properties: usize,
     config: &LoadTestConfig,
@@ -240,7 +240,7 @@ fn simulate_user_registration(
 }
 
 /// Simulate a user querying properties
-fn simulate_user_queries(
+pub fn simulate_user_queries(
     user_id: usize,
     num_queries: usize,
     config: &LoadTestConfig,

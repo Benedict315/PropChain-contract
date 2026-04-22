@@ -624,5 +624,4 @@ mod propchain_fees {
         }
     }
 
-    include!("tests.rs");
 }

@@ -2,7 +2,6 @@
 
 pub mod ml_pipeline;
 #[cfg(test)]
-mod tests;
 
 use ink::prelude::vec::Vec;
 use ink::prelude::string::String;

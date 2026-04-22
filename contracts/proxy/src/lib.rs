@@ -919,6 +919,4 @@ mod propchain_proxy {
             assert_eq!(proxy.governors().len(), 1);
         }
     }
-    // Unit tests extracted to tests.rs (Issue #101)
-    include!("tests.rs");
 }

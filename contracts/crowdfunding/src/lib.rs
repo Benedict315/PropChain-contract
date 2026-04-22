@@ -357,10 +357,10 @@ mod propchain_crowdfunding {
                 investor_count: 0,
             });
             let investment = self.investments.get((campaign_id, investor)).unwrap_or(0);
-            if campaign.raised_amount == 0 {
+            if campaign.target_amount == 0 {
                 return 0;
             }
-            (total_profit * investment) / campaign.raised_amount
+            (total_profit * investment) / campaign.target_amount
         }
 
         #[ink(message)]

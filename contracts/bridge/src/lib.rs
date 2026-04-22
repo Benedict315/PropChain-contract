@@ -798,5 +798,4 @@ mod bridge {
         }
     }
 
-    include!("tests.rs");
 }

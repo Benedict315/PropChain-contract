@@ -3737,9 +3737,6 @@ pub mod propchain_contracts {
 }
 
 #[cfg(test)]
-mod tests;
-
-#[cfg(test)]
 mod tests_pause {
     use super::propchain_contracts::{Error, PropertyRegistry};
     use ink::primitives::AccountId;

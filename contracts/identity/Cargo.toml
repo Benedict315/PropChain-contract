@@ -20,6 +20,7 @@ rand_core = { version = "0.6", default-features = false }
 
 [lib]
 path = "lib.rs"
+crate-type = ["rlib"]
 
 [features]
 default = ["std"]
