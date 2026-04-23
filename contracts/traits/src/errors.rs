@@ -265,6 +265,16 @@ pub mod property_token_codes {
     pub const PROPOSAL_CLOSED: u32 = 1023;
     pub const ASK_NOT_FOUND: u32 = 1024;
     pub const BATCH_SIZE_EXCEEDED: u32 = 1025;
+    // KYC-based transfer restriction error codes
+    pub const SENDER_NOT_VERIFIED: u32 = 1026;
+    pub const RECIPIENT_NOT_VERIFIED: u32 = 1027;
+    pub const VERIFICATION_LEVEL_INSUFFICIENT: u32 = 1028;
+    pub const TRANSFER_QUOTA_EXCEEDED: u32 = 1029;
+    pub const ACCOUNT_BLACKLISTED: u32 = 1030;
+    pub const ACCOUNT_NOT_WHITELISTED: u32 = 1031;
+    pub const HOLD_PERIOD_NOT_MET: u32 = 1032;
+    pub const SENDER_RISK_LEVEL_TOO_HIGH: u32 = 1033;
+    pub const RECIPIENT_RISK_LEVEL_TOO_HIGH: u32 = 1034;
 }
 
 /// Escrow error codes (2000-2999)
