@@ -591,7 +591,7 @@ pub mod property_token {
         }
 
         /// ERC-1155: Safely transfers tokens from one account to another
-       #[ink(message)]
+        #[ink(message)]
         pub fn safe_batch_transfer_from(
             &mut self,
             from: AccountId,
@@ -1875,7 +1875,10 @@ pub mod property_token {
                 from: AccountId::from([0u8; 32]), // Zero address for minting
                 to: recipient,
                 timestamp: self.env().block_timestamp(),
-                transaction_hash: propchain_traits::crypto::hash_encoded(&(&recipient, new_token_id)),
+                transaction_hash: propchain_traits::crypto::hash_encoded(&(
+                    &recipient,
+                    new_token_id,
+                )),
             };
 
             self.ownership_history_count.insert(new_token_id, &1u32);
