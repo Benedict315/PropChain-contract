@@ -30,4 +30,6 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1.8", features = ["v4", "serde"] }
 # subxt = { version = "0.33", optional = true }
 url = "2.5"
+utoipa = { version = "5", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "8", features = ["axum"] }
 
