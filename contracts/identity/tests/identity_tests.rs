@@ -679,8 +679,7 @@ fn test_identity_audit_trail() {
     assert_eq!(identity_registry.get_audit_count(), 2);
 
     // Get account-specific audit entries
-    let entries =
-        identity_registry.get_account_audit_entries(accounts.alice, 0, 10);
+    let entries = identity_registry.get_account_audit_entries(accounts.alice, 0, 10);
     assert_eq!(entries.len(), 2);
     assert_eq!(entries[0].action, "identity_created");
     assert_eq!(entries[1].action, "identity_verified");

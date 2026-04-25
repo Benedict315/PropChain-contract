@@ -30,6 +30,7 @@ mod propchain_crowdfunding {
         InvalidParameters,
         AlreadyVoted,
         ReentrantCall,
+
         OracleVerificationFailed,
         CampaignNotFailed,
         AlreadyRefunded,
@@ -544,7 +545,11 @@ mod propchain_crowdfunding {
                 if campaign.status != CampaignStatus::Cancelled {
                     return Err(CrowdfundingError::CampaignNotFailed);
                 }
-                if self.refunds_issued.get((campaign_id, caller)).unwrap_or(false) {
+                if self
+                    .refunds_issued
+                    .get((campaign_id, caller))
+                    .unwrap_or(false)
+                {
                     return Err(CrowdfundingError::AlreadyRefunded);
                 }
                 let amount = self

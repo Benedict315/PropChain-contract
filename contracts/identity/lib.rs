@@ -1283,8 +1283,7 @@ pub mod propchain_identity {
         #[ink::test]
         fn test_audit_trail_on_create() {
             let mut reg = default_registry();
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
             assert_eq!(reg.get_audit_count(), 0);
             reg.create_identity(
                 "did:test:audit1".into(),
@@ -1303,8 +1302,7 @@ pub mod propchain_identity {
         #[ink::test]
         fn test_audit_trail_on_verify() {
             let mut reg = default_registry();
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
             reg.create_identity(
                 "did:test:audit2".into(),
                 vec![1u8; 32],
@@ -1325,8 +1323,7 @@ pub mod propchain_identity {
         #[ink::test]
         fn test_revoke_identity() {
             let mut reg = default_registry();
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
             // Create identity as bob
             ink::env::test::set_caller::<ink::env::DefaultEnvironment>(accounts.bob);
             reg.create_identity(
@@ -1355,8 +1352,7 @@ pub mod propchain_identity {
         #[ink::test]
         fn test_revoke_unauthorized() {
             let mut reg = default_registry();
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
             reg.create_identity(
                 "did:test:revoke2".into(),
                 vec![1u8; 32],
