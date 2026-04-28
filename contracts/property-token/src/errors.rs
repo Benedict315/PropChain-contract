@@ -81,6 +81,20 @@ pub enum Error {
     /// Token IDs and amounts vectors have different lengths
     LengthMismatch,
 
+    /// No stake found for this account and token
+    StakeNotFound,
+    /// Stake lock period has not yet expired
+    LockActive,
+    /// No staking rewards available to claim
+    NoRewards,
+    /// Stake reward pool has insufficient funds
+    InsufficientRewardPool,
+    /// An active stake already exists for this account and token
+    AlreadyStaked,
+    /// Token IDs and amounts vectors have different lengths
+    LengthMismatch,
+    /// Reentrancy guard detected a reentrant call
+    ReentrantCall,
 }
 
 impl core::fmt::Display for Error {
@@ -126,6 +140,13 @@ impl core::fmt::Display for Error {
 
             Error::LengthMismatch => write!(f, "Token IDs and amounts length mismatch"),
 
+            Error::StakeNotFound => write!(f, "Stake not found"),
+            Error::LockActive => write!(f, "Stake lock period is still active"),
+            Error::NoRewards => write!(f, "No staking rewards available"),
+            Error::InsufficientRewardPool => write!(f, "Insufficient reward pool balance"),
+            Error::AlreadyStaked => write!(f, "An active stake already exists for this token"),
+            Error::LengthMismatch => write!(f, "Token IDs and amounts length mismatch"),
+            Error::ReentrantCall => write!(f, "Reentrant call"),
         }
     }
 }
@@ -171,6 +192,13 @@ impl ContractError for Error {
 
             Error::LengthMismatch => property_token_codes::BATCH_SIZE_EXCEEDED,
 
+            Error::StakeNotFound => property_token_codes::STAKE_NOT_FOUND,
+            Error::LockActive => property_token_codes::LOCK_ACTIVE,
+            Error::NoRewards => property_token_codes::NO_REWARDS,
+            Error::InsufficientRewardPool => property_token_codes::INSUFFICIENT_REWARD_POOL,
+            Error::AlreadyStaked => property_token_codes::ALREADY_STAKED,
+            Error::LengthMismatch => property_token_codes::BATCH_SIZE_EXCEEDED,
+            Error::ReentrantCall => property_token_codes::REENTRANT_CALL,
         }
     }
 
@@ -219,6 +247,18 @@ impl ContractError for Error {
             Error::HoldPeriodNotMet => "The minimum hold period for this token has not been met",
             Error::SenderRiskLevelTooHigh => "Sender's risk level is too high for this transfer",
             Error::RecipientRiskLevelTooHigh => "Recipient's risk level is too high for this transfer",
+            Error::StakeNotFound => "No active stake found for this account and token",
+            Error::LockActive => {
+                "The stake lock period has not yet expired; unstaking is not permitted"
+            }
+            Error::NoRewards => "There are no staking rewards available to claim at this time",
+            Error::InsufficientRewardPool => {
+                "The stake reward pool does not have enough funds to cover the claimed rewards"
+            }
+            Error::AlreadyStaked => {
+                "An active stake already exists for this account and token; unstake first"
+            }
+            Error::ReentrantCall => "Reentrancy guard detected a reentrant call",
         }
     }
 

@@ -8,14 +8,13 @@ pub mod constants;
 pub mod crypto;
 pub mod di;
 pub mod errors;
-pub mod observer;
 pub mod randomness;
+pub mod reentrancy_guard;
 
 pub use access_control::*;
 pub use crypto::*;
 pub use di::*;
-// Export observer types explicitly to avoid name collision with event_bus::EventBus trait
-pub use observer::{EventKind, EventObserver};
+pub use reentrancy_guard::*;
 pub mod i18n;
 pub mod monitoring;
 
@@ -373,6 +372,9 @@ pub struct BridgeConfig {
     pub gas_limit_per_bridge: u64,
     pub emergency_pause: bool,
     pub metadata_preservation: bool,
+    pub rate_limit_enabled: bool,
+    pub max_requests_per_day: u64,
+    pub max_value_per_day: u128,
 }
 
 /// Chain-specific bridge information
@@ -386,9 +388,10 @@ pub struct ChainBridgeInfo {
     pub chain_name: String,
     pub bridge_contract_address: Option<ink::primitives::AccountId>,
     pub is_active: bool,
-    pub gas_multiplier: u32,      // Gas cost multiplier for this chain
-    pub confirmation_blocks: u32, // Blocks to wait for confirmation
+    pub gas_multiplier: u32,
+    pub confirmation_blocks: u32,
     pub supported_tokens: Vec<TokenId>,
+    pub chain_daily_limit: u128,
 }
 
 // =============================================================================
